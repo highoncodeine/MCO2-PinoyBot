@@ -21,8 +21,34 @@ data = pd.concat([data1, data2], ignore_index=True)
 # Check and clean column names
 data.columns = [col.strip() for col in data.columns]
 token_col = 'word'
-label_col = 'label'
+
+def get_correct_label(row):
+    if pd.notna(row.get('is_correct')) and row['is_correct'] == False:
+        if pd.notna(row.get('corrected_label')):
+            return row['corrected_label']
+    return row['label']
+
+# Apply the correction logic
+data['final_label'] = data.apply(get_correct_label, axis=1)
+label_col = 'final_label'
+
 data = data.dropna(subset=[token_col, label_col])
+
+# Print correction statistics
+if 'is_correct' in data.columns:
+    incorrect_rows = data[data['is_correct'] == False]
+    total_corrections = len(incorrect_rows)
+    print(f"Dataset loaded: {len(data)} total samples")
+    print(f"Corrections applied: {total_corrections} samples")
+    if total_corrections > 0:
+        print("Sample corrections:")
+        for idx in incorrect_rows.head(3).index:
+            original = data.loc[idx, 'label']
+            corrected = data.loc[idx, 'final_label']
+            word = data.loc[idx, 'word']
+            print(f"  '{word}': {original} → {corrected}")
+else:
+    print("No 'is_correct' column found - using original labels")
 
 # ========== 2. Simplify Labels ==========
 def simplify_label(label):
