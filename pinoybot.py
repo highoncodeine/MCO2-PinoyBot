@@ -118,6 +118,9 @@ def extract_numerical_features(word):
     return features
 
 def tag_language(tokens: List[str]) -> List[str]:
+    if not tokens:
+        return []
+
     with open('trained_model.pkl', 'rb') as f:
         model, vectorizer, scaler = pickle.load(f)
     
