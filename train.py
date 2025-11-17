@@ -93,11 +93,11 @@ def extract_numerical_features(word):
     has_fil_suffix = any(word_lower.endswith(s) for s in fil_suffixes)
     
     # Common English prefixes
-    eng_prefixes = ['a', 'an', 'ante', 'anti', 'auto', 'circum', 'co', 'com', 'con', 'contra', 'contro', 'de', 'dis', 'en', 'ex', 'extra', 'hetero', 'homo', 'homeo', 'hyper', 'il', 'im', 'in', 'ir', 'in', 'inter', 'intra', 'intro', 'macro', 'micro', 'mono', 'non', 'omni', 'post', 'pre', 'pro', 're', 'sub', 'sym', 'syn', 'tele', 'trans', 'tri', 'un', 'uni', 'up']
+    eng_prefixes = ['un', 're', 'pre', 'dis', 'over', 'under', 'out', 'mis', 'non', 'anti', 'auto', 'inter', 'trans', 'super', 'micro', 'multi', 'semi', 'sub']
     has_eng_prefix = any(word_lower.startswith(p) for p in eng_prefixes)
 
     # Common English suffixes
-    eng_suffixes = ['acy', 'al', 'ance', 'ence', 'dom', 'er', 'or', 'ism', 'ist', 'ity', 'ty', 'ment', 'ness', 'ship', 'sion', 'tion', 'ate', 'en', 'ify', 'fy', 'ize', 'ise', 'able', 'ible', 'al', 'esque', 'ful', 'ic', 'ical', 'ious', 'ous', 'ish', 'ive', 'less', 'y']
+    eng_suffixes = ['tion', 'sion', 'ness', 'ment', 'able', 'ible', 'ful', 'less', 'ish', 'ive', 'ous', 'ious', 'ing', 'ed', 'er', 'est', 'ly', 'ize', 'ise', 'acy', 'ship', 'hood']
     has_eng_suffix = any(word_lower.endswith(s) for s in eng_suffixes)
     
     has_repeated_chars = any(word_lower[i] == word_lower[i+1] for i in range(len(word_lower)-1))
