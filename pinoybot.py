@@ -15,81 +15,81 @@ from scipy.sparse import hstack
 from typing import List
 
 def extract_numerical_features(word):
-    word_lower = str(word).lower()
-    word_orig = str(word)
+    text = str(word).lower()
+    original_word = str(word)
     
-    length = len(word_lower)
-    if length == 0:
-        length = 1  
+    word_len = len(text)
+    if word_len == 0:
+        word_len = 1  
     
-    vowels = 'aeiou'
-    consonants = 'bcdfghjklmnpqrstvwxyz'
-    vowel_count = sum(1 for c in word_lower if c in vowels)
-    consonant_count = sum(1 for c in word_lower if c in consonants)
+    vowel_chars = 'aeiou'
+    consonant_chars = 'bcdfghjklmnpqrstvwxyz'
+    vowels_found = sum(1 for char in text if char in vowel_chars)
+    consonants_found = sum(1 for char in text if char in consonant_chars)
     
-    has_ny = 'ny' in word_lower
-    has_ng = 'ng' in word_lower
-    has_tilde = 'ñ' in word_lower
+    contains_ny = 'ny' in text
+    contains_ng = 'ng' in text
+    has_tilde = 'ñ' in text
     
     # English-common letters (rare in Filipino)
-    has_c = 'c' in word_lower and 'ch' not in word_lower
-    has_f = 'f' in word_lower
-    has_j = 'j' in word_lower
-    has_v = 'v' in word_lower
-    has_z = 'z' in word_lower
-    has_x = 'x' in word_lower
+    has_c = 'c' in text and 'ch' not in text
+    has_f = 'f' in text
+    has_j = 'j' in text
+    has_v = 'v' in text
+    has_z = 'z' in text
+    has_x = 'x' in text
     
     # Common Filipino prefixes
-    fil_prefixes = ['mag', 'nag', 'pag', 'ka', 'pa', 'ma', 'na', 'um', 'in', 'maka', 'naka', 'mapa', 'napaka', 'pinaka', 'pina', 'pinag', 'pagka', 'magpa', 'nagpa', 'makapag', 'nakapag', 'mapag', 'ipag', 'ipa', 'ipinag', 'mang', 'man', 'pang', 'pan', 'pam', 'pakikipag', 'makipag', 'nakipag', 'pinaki', 'taga', 'tiga']
+    filipino_prefixes = ['mag', 'nag', 'pag', 'ka', 'pa', 'ma', 'na', 'um', 'in', 'maka', 'naka', 'mapa', 'napaka', 'pinaka', 'pina', 'pinag', 'pagka', 'magpa', 'nagpa', 'makapag', 'nakapag', 'mapag', 'ipag', 'ipa', 'ipinag', 'mang', 'man', 'pang', 'pan', 'pam', 'pakikipag', 'makipag', 'nakipag', 'pinaki', 'taga', 'tiga']
 
-    has_fil_prefix = any(word_lower.startswith(p) for p in fil_prefixes)
+    starts_with_fil = any(text.startswith(prefix) for prefix in filipino_prefixes)
     
     # Common Filipino suffixes
-    fil_suffixes = ['an', 'in', 'han', 'hin', 'ng', 'on', 'yon', 'yin']
-    has_fil_suffix = any(word_lower.endswith(s) for s in fil_suffixes)
+    filipino_suffixes = ['an', 'in', 'han', 'hin', 'ng', 'on', 'yon', 'yin']
+    ends_with_fil = any(text.endswith(suffix) for suffix in filipino_suffixes)
     
     # Common English prefixes 
-    eng_prefixes = ['un', 're', 'pre', 'dis', 'over', 'under', 'out', 'mis', 'non', 'anti', 'auto', 'inter', 'trans', 'super', 'micro', 'multi', 'semi', 'sub']
-    has_eng_prefix = any(word_lower.startswith(p) for p in eng_prefixes)
+    english_prefixes = ['un', 're', 'pre', 'dis', 'over', 'under', 'out', 'mis', 'non', 'anti', 'auto', 'inter', 'trans', 'super', 'micro', 'multi', 'semi', 'sub']
+    starts_with_eng = any(text.startswith(prefix) for prefix in english_prefixes)
 
     # Common English suffixes 
-    eng_suffixes = ['tion', 'sion', 'ness', 'ment', 'able', 'ible', 'ful', 'less', 'ish', 'ive', 'ous', 'ious', 'ing', 'ed', 'er', 'est', 'ly', 'ize', 'ise', 'acy', 'ship', 'hood']
-    has_eng_suffix = any(word_lower.endswith(s) for s in eng_suffixes)
+    english_suffixes = ['tion', 'sion', 'ness', 'ment', 'able', 'ible', 'ful', 'less', 'ish', 'ive', 'ous', 'ious', 'ing', 'ed', 'er', 'est', 'ly', 'ize', 'ise', 'acy', 'ship', 'hood']
+    ends_with_eng = any(text.endswith(suffix) for suffix in english_suffixes)
     
-    has_repeated_chars = any(word_lower[i] == word_lower[i+1] for i in range(len(word_lower)-1))
+    has_repeated_chars = any(text[i] == text[i+1] for i in range(len(text)-1))
     
-    is_capitalized = word_orig[0].isupper() if len(word_orig) > 0 else False
-    is_all_caps = word_orig.isupper() and word_orig.isalpha()
-    capital_ratio = sum(1 for c in word_orig if c.isupper()) / length
+    starts_capital = original_word[0].isupper() if len(original_word) > 0 else False
+    all_uppercase = original_word.isupper() and original_word.isalpha()
+    cap_ratio = sum(1 for c in original_word if c.isupper()) / word_len
     
-    has_hyphen = '-' in word_orig
+    has_hyphen = '-' in original_word
     
-    has_digit = any(c.isdigit() for c in word_orig)
-    has_special = any(not c.isalnum() and c != '-' for c in word_orig)
+    contains_digit = any(c.isdigit() for c in original_word)
+    has_special_chars = any(not c.isalnum() and c != '-' for c in original_word)
     
-    vowel_ratio = vowel_count / length
-    consonant_ratio = consonant_count / length
+    vowel_ratio = vowels_found / word_len
+    consonant_ratio = consonants_found / word_len
     
-    fil_bigrams = ['ng', 'ka', 'an', 'sa', 'na', 'pa', 'la', 'ta', 'ba', 'ga']
-    fil_bigram_count = sum(1 for bg in fil_bigrams if bg in word_lower)
+    filipino_bigrams = ['ng', 'ka', 'an', 'sa', 'na', 'pa', 'la', 'ta', 'ba', 'ga']
+    fil_bigram_count = sum(1 for bigram in filipino_bigrams if bigram in text)
     
-    eng_bigrams = ['th', 'er', 'on', 'an', 'in', 'ed', 'nd', 'to', 'en', 'ty']
-    eng_bigram_count = sum(1 for bg in eng_bigrams if bg in word_lower)
+    english_bigrams = ['th', 'er', 'on', 'an', 'in', 'ed', 'nd', 'to', 'en', 'ty']
+    eng_bigram_count = sum(1 for bigram in english_bigrams if bigram in text)
     
-    double_vowels = ['aa', 'ee', 'ii', 'oo', 'uu']
-    has_double_vowel = any(dv in word_lower for dv in double_vowels)
+    repeated_vowels = ['aa', 'ee', 'ii', 'oo', 'uu']
+    has_double_vowel = any(vowel_pair in text for vowel_pair in repeated_vowels)
     
-    ends_with_vowel = word_lower[-1] in vowels if len(word_lower) > 0 else False
-    ends_with_consonant = word_lower[-1] in consonants if len(word_lower) > 0 else False
+    vowel_ending = text[-1] in vowel_chars if len(text) > 0 else False
+    consonant_ending = text[-1] in consonant_chars if len(text) > 0 else False
     
-    features = [
-        length,
-        vowel_count,
-        consonant_count,
+    feature_list = [
+        word_len,
+        vowels_found,
+        consonants_found,
         vowel_ratio,
         consonant_ratio,
-        int(has_ny),
-        int(has_ng),
+        int(contains_ny),
+        int(contains_ng),
         int(has_tilde),
         int(has_c),
         int(has_f),
@@ -97,45 +97,45 @@ def extract_numerical_features(word):
         int(has_v),
         int(has_z),
         int(has_x),
-        int(has_fil_prefix),
-        int(has_fil_suffix),
-        int(has_eng_prefix),
-        int(has_eng_suffix),
+        int(starts_with_fil),
+        int(ends_with_fil),
+        int(starts_with_eng),
+        int(ends_with_eng),
         int(has_repeated_chars),
-        int(is_capitalized),
-        int(is_all_caps),
-        capital_ratio,
+        int(starts_capital),
+        int(all_uppercase),
+        cap_ratio,
         int(has_hyphen),
-        int(has_digit),
-        int(has_special),
+        int(contains_digit),
+        int(has_special_chars),
         fil_bigram_count,
         eng_bigram_count,
         int(has_double_vowel),
-        int(ends_with_vowel),
-        int(ends_with_consonant),
+        int(vowel_ending),
+        int(consonant_ending),
     ]
     
-    return features
+    return feature_list
 
 def tag_language(tokens: List[str]) -> List[str]:
     if not tokens:
         return []
 
-    with open('trained_model.pkl', 'rb') as f:
-        model, vectorizer, scaler = pickle.load(f)
+    with open('trained_model.pkl', 'rb') as model_file:
+        classifier, text_vectorizer, feature_scaler = pickle.load(model_file)
     
-    X_ngrams = vectorizer.transform(tokens)
+    ngram_features = text_vectorizer.transform(tokens)
     
-    X_numerical = np.array([extract_numerical_features(token) for token in tokens])
-    X_numerical_scaled = scaler.transform(X_numerical)
+    numeric_features = np.array([extract_numerical_features(token) for token in tokens])
+    scaled_features = feature_scaler.transform(numeric_features)
     
-    X_combined = hstack([X_ngrams, X_numerical_scaled])
+    combined_features = hstack([ngram_features, scaled_features])
     
-    predictions = model.predict(X_combined)
-    return predictions.tolist()
+    predicted_labels = classifier.predict(combined_features)
+    return predicted_labels.tolist()
 
 if __name__ == "__main__":
-    example_tokens = ["Love", "kita", "."]
-    print("Tokens:", example_tokens)
-    tags = tag_language(example_tokens)
-    print("Predicted Tags:", tags)
+    test_words = ["Love", "kita", "."]
+    print("Tokens:", test_words)
+    result_tags = tag_language(test_words)
+    print("Predicted Tags:", result_tags)
