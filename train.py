@@ -12,8 +12,11 @@ from sklearn.metrics import classification_report, accuracy_score, confusion_mat
 
 # Load multiple datasets
 data1 = pd.read_csv("CSINTSY-G28-DATASET.csv")
+data2 = pd.read_csv("[GROUP 16] sentence_ID 780 - 832 - Sheet1.csv")
+data3 = pd.read_csv("final_annotations1.csv")
+data4 = pd.read_csv("final_annotations2.csv")
 
-data = pd.concat([data1], ignore_index=True)
+data = pd.concat([data1, data2, data3, data4], ignore_index=True)
 
 data.columns = [col.strip() for col in data.columns]
 token_col = 'word'
