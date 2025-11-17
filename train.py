@@ -163,8 +163,8 @@ def extract_numerical_features(word):
 
 text_vectorizer = TfidfVectorizer(
     analyzer='char',
-    ngram_range=(2, 4), 
-    max_features=300     
+    ngram_range=(2, 8), 
+    max_features=1000     
 )
 ngram_features = text_vectorizer.fit_transform(combined_data[word_column])
 
