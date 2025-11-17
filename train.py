@@ -225,7 +225,7 @@ plt.savefig("confusion_matrix.png")
 plt.close()
 print("\nConfusion matrix saved as 'confusion_matrix.png'")
 
-with open("trained_model_hybrid.pkl", "wb") as f:
+with open("trained_model.pkl", "wb") as f:
     pickle.dump((model, vectorizer, scaler), f)
 
 print("Hybrid Multinomial Naive Bayes model, vectorizer, and scaler saved to 'trained_model.pkl'")
