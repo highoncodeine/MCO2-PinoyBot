@@ -20,7 +20,7 @@ def extract_numerical_features(word):
     
     length = len(word_lower)
     if length == 0:
-        length = 1
+        length = 1  
     
     vowels = 'aeiou'
     consonants = 'bcdfghjklmnpqrstvwxyz'
@@ -30,6 +30,8 @@ def extract_numerical_features(word):
     has_ny = 'ny' in word_lower
     has_ng = 'ng' in word_lower
     has_tilde = 'ñ' in word_lower
+    
+    # English-common letters (rare in Filipino)
     has_c = 'c' in word_lower and 'ch' not in word_lower
     has_f = 'f' in word_lower
     has_j = 'j' in word_lower
@@ -37,23 +39,31 @@ def extract_numerical_features(word):
     has_z = 'z' in word_lower
     has_x = 'x' in word_lower
     
-    fil_prefixes = ['nag', 'mag', 'pag', 'ka', 'pa', 'ma', 'um', 'in', 'naka', 'maka', 'pina', 'pinag']
+    # Common Filipino prefixes
+    fil_prefixes = ['mag', 'nag', 'pag', 'ka', 'pa', 'ma', 'na', 'um', 'in', 'maka', 'naka', 'mapa', 'napaka', 'pinaka', 'pina', 'pinag', 'pagka', 'magpa', 'nagpa', 'makapag', 'nakapag', 'mapag', 'ipag', 'ipa', 'ipinag', 'mang', 'man', 'pang', 'pan', 'pam', 'pakikipag', 'makipag', 'nakipag', 'pinaki', 'taga', 'tiga']
+
     has_fil_prefix = any(word_lower.startswith(p) for p in fil_prefixes)
     
-    fil_suffixes = ['an', 'in', 'han', 'hin', 'ng', 'ay']
+    # Common Filipino suffixes
+    fil_suffixes = ['an', 'in', 'han', 'hin', 'ng', 'on', 'yon', 'yin']
     has_fil_suffix = any(word_lower.endswith(s) for s in fil_suffixes)
     
+    # Common English prefixes 
     eng_prefixes = ['un', 're', 'pre', 'dis', 'over', 'under', 'out', 'mis', 'non', 'anti', 'auto', 'inter', 'trans', 'super', 'micro', 'multi', 'semi', 'sub']
     has_eng_prefix = any(word_lower.startswith(p) for p in eng_prefixes)
-    
+
+    # Common English suffixes 
     eng_suffixes = ['tion', 'sion', 'ness', 'ment', 'able', 'ible', 'ful', 'less', 'ish', 'ive', 'ous', 'ious', 'ing', 'ed', 'er', 'est', 'ly', 'ize', 'ise', 'acy', 'ship', 'hood']
     has_eng_suffix = any(word_lower.endswith(s) for s in eng_suffixes)
     
     has_repeated_chars = any(word_lower[i] == word_lower[i+1] for i in range(len(word_lower)-1))
+    
     is_capitalized = word_orig[0].isupper() if len(word_orig) > 0 else False
     is_all_caps = word_orig.isupper() and word_orig.isalpha()
     capital_ratio = sum(1 for c in word_orig if c.isupper()) / length
+    
     has_hyphen = '-' in word_orig
+    
     has_digit = any(c.isdigit() for c in word_orig)
     has_special = any(not c.isalnum() and c != '-' for c in word_orig)
     
@@ -72,18 +82,43 @@ def extract_numerical_features(word):
     ends_with_vowel = word_lower[-1] in vowels if len(word_lower) > 0 else False
     ends_with_consonant = word_lower[-1] in consonants if len(word_lower) > 0 else False
     
-    return [
-        length, vowel_count, consonant_count, vowel_ratio, consonant_ratio,
-        int(has_ny), int(has_ng), int(has_tilde), int(has_c), int(has_f),
-        int(has_j), int(has_v), int(has_z), int(has_x), int(has_fil_prefix),
-        int(has_fil_suffix), int(has_eng_prefix), int(has_eng_suffix), int(has_repeated_chars),
-        int(is_capitalized), int(is_all_caps), capital_ratio, int(has_hyphen),
-        int(has_digit), int(has_special), fil_bigram_count, eng_bigram_count,
-        int(has_double_vowel), int(ends_with_vowel), int(ends_with_consonant)
+    features = [
+        length,
+        vowel_count,
+        consonant_count,
+        vowel_ratio,
+        consonant_ratio,
+        int(has_ny),
+        int(has_ng),
+        int(has_tilde),
+        int(has_c),
+        int(has_f),
+        int(has_j),
+        int(has_v),
+        int(has_z),
+        int(has_x),
+        int(has_fil_prefix),
+        int(has_fil_suffix),
+        int(has_eng_prefix),
+        int(has_eng_suffix),
+        int(has_repeated_chars),
+        int(is_capitalized),
+        int(is_all_caps),
+        capital_ratio,
+        int(has_hyphen),
+        int(has_digit),
+        int(has_special),
+        fil_bigram_count,
+        eng_bigram_count,
+        int(has_double_vowel),
+        int(ends_with_vowel),
+        int(ends_with_consonant),
     ]
+    
+    return features
 
 def tag_language(tokens: List[str]) -> List[str]:
-    with open('trained_model_hybrid.pkl', 'rb') as f:
+    with open('trained_model.pkl', 'rb') as f:
         model, vectorizer, scaler = pickle.load(f)
     
     X_ngrams = vectorizer.transform(tokens)
