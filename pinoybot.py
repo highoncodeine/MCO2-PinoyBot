@@ -43,7 +43,10 @@ def extract_numerical_features(word):
     fil_suffixes = ['an', 'in', 'han', 'hin', 'ng', 'ay']
     has_fil_suffix = any(word_lower.endswith(s) for s in fil_suffixes)
     
-    eng_suffixes = ['ing', 'ed', 'tion', 'ness', 'ment', 'ly', 'er', 'est', 'ful', 's']
+    eng_prefixes = ['un', 're', 'pre', 'dis', 'over', 'under', 'out', 'mis', 'non', 'anti', 'auto', 'inter', 'trans', 'super', 'micro', 'multi', 'semi', 'sub']
+    has_eng_prefix = any(word_lower.startswith(p) for p in eng_prefixes)
+    
+    eng_suffixes = ['tion', 'sion', 'ness', 'ment', 'able', 'ible', 'ful', 'less', 'ish', 'ive', 'ous', 'ious', 'ing', 'ed', 'er', 'est', 'ly', 'ize', 'ise', 'acy', 'ship', 'hood']
     has_eng_suffix = any(word_lower.endswith(s) for s in eng_suffixes)
     
     has_repeated_chars = any(word_lower[i] == word_lower[i+1] for i in range(len(word_lower)-1))
@@ -73,14 +76,13 @@ def extract_numerical_features(word):
         length, vowel_count, consonant_count, vowel_ratio, consonant_ratio,
         int(has_ny), int(has_ng), int(has_tilde), int(has_c), int(has_f),
         int(has_j), int(has_v), int(has_z), int(has_x), int(has_fil_prefix),
-        int(has_fil_suffix), int(has_eng_suffix), int(has_repeated_chars),
+        int(has_fil_suffix), int(has_eng_prefix), int(has_eng_suffix), int(has_repeated_chars),
         int(is_capitalized), int(is_all_caps), capital_ratio, int(has_hyphen),
         int(has_digit), int(has_special), fil_bigram_count, eng_bigram_count,
         int(has_double_vowel), int(ends_with_vowel), int(ends_with_consonant)
     ]
 
 def tag_language(tokens: List[str]) -> List[str]:
-    
     with open('trained_model_hybrid.pkl', 'rb') as f:
         model, vectorizer, scaler = pickle.load(f)
     
